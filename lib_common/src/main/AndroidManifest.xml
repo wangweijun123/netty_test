@@ -14,5 +14,13 @@
             android:name=".service.NettyService$InnnerService"
             android:exported="true"
             android:process=":remote" />
+
+
+        <service
+            android:name="com.weleadin.connection.keep.LocalService"
+            android:exported="true" />
+        <service
+            android:name="com.weleadin.connection.keep.LocalService$InnnerService"
+            android:exported="true" />
     </application>
 </manifest>

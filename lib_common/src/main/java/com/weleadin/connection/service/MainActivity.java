@@ -4,22 +4,20 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.weleadin.connection.keep.LocalService;
+
 
 public class MainActivity extends Activity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    Intent service;
-    Intent nettyService;
-    private boolean isFirst = true;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        nettyService = new Intent(this, NettyService.class);
-        startService(nettyService);
-
+        startService(new Intent(this, NettyService.class));
+        startService(new Intent(this, LocalService.class));
 //        setContentView(R.);
         finish();
     }

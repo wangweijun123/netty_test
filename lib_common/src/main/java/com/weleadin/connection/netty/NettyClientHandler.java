@@ -37,7 +37,7 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<String> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
-        Log.e(TAG, "来自服务器的消息 ====》" + msg);
+//        Log.e(TAG, "来自服务器的消息 ====》" + msg);
         listener.onMessageResponse(msg);
     }
 
@@ -61,18 +61,17 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<String> {
                 } catch (Exception e){
                     e.printStackTrace();
                 }*/
-                Log.e(TAG, "发送心跳");
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("instructions","HEART_BEAT");
                 ctx.channel().writeAndFlush(jsonObject.toString()+"\t").addListener(new FutureListener() {
                     @Override
                     public void success() {
-                        Log.e(TAG,"发送心跳 success");
+//                        Log.e(TAG,"发送心跳 success");
                     }
 
                     @Override
                     public void error() {
-                        Log.e(TAG,"发送心跳 failure");
+//                        Log.e(TAG,"发送心跳 failure");
                     }
                 });
             }

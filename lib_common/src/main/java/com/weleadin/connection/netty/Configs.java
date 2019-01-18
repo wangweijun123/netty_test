@@ -6,11 +6,10 @@ public class Configs {
 
     public static String GID;
 
-    public static final String SOCKET_LOCAL_HOST = "192.168.1.119";
-     public static final String SOCKET_TEST_HOST = "aiconnection.58wld.com";
-    public static final String SOCKET_HOST = "192.168.1.246";//   aiconnection.weilingdi.com
 
-    public static final int SOCKET_PORT = 17001;
+//    public static final String SOCKET_HOST = "39.108.192.195";
+    public static final String SOCKET_HOST = "192.168.1.246";
+    public static final int SOCKET_PORT = 17002;
 
     public static final String NEW_SIGN_KEY_URL = "wld20181010";
 

@@ -16,8 +16,8 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        startService(new Intent(this, NettyService.class));
-        startService(new Intent(this, LocalService.class));
+//        startService(new Intent(this, NettyService.class));
+//        startService(new Intent(this, LocalService.class));
 //        setContentView(R.);
         finish();
     }

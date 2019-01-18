@@ -10,6 +10,8 @@
         <service android:name=".service.NettyService"
             android:process=":remote"
             android:exported="true"/>
+        <receiver android:name=".service.AlertReceiver"/>
+
         <service
             android:name=".service.NettyService$InnnerService"
             android:exported="true"
@@ -22,5 +24,7 @@
         <service
             android:name="com.weleadin.connection.keep.LocalService$InnnerService"
             android:exported="true" />
+
+
     </application>
 </manifest>

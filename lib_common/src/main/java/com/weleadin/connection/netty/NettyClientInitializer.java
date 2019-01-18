@@ -32,7 +32,8 @@ public class NettyClientInitializer extends ChannelInitializer<SocketChannel>{
         ByteBuf buf = Unpooled.copiedBuffer("\t".getBytes());
         pipeline.addLast(new LoggingHandler(LogLevel.DEBUG));
         pipeline.addLast(new DelimiterBasedFrameDecoder(2048,buf));
-        pipeline.addLast("IdleStateHandler",new IdleStateHandler(0,5,0, TimeUnit.SECONDS));
+        pipeline.addLast("IdleStateHandler",
+                new IdleStateHandler(0,60,0, TimeUnit.SECONDS));// 一分钟一次心跳
         pipeline.addLast("StringDecoder",new StringDecoder());
         pipeline.addLast("StringEncoder",new StringEncoder());
         pipeline.addLast(new NettyClientHandler(listener));

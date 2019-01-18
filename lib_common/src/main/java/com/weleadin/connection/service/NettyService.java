@@ -1,8 +1,10 @@
 package com.weleadin.connection.service;
 
 import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
@@ -52,7 +54,7 @@ public class NettyService extends Service implements NettyListener {
         //使Service变成前台服务
         startForeground(NOTIFICATION_ID, createNotification());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            Log.e(TAG,"啟動訂單 內部類dddddddddd");
+            Log.e(TAG,"启动内部netty inner service");
             startService(new Intent(this, InnnerService.class));
         }
     }
@@ -89,6 +91,7 @@ public class NettyService extends Service implements NettyListener {
         NettyClient.getInstance().sendMessage2(jsonObject,null);
     }
 
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -97,21 +100,38 @@ public class NettyService extends Service implements NettyListener {
         NettyClient.getInstance().disconnect();
     }
 
+    private int notificationId = 1;
     @Override
     public void onMessageResponse(String jsonMSG) {
         try {
             MessageBean messageBean = JSON.parseObject(jsonMSG,MessageBean.class);
-//            Log.e(TAG,"messageBean.getInstructions() : "+messageBean.getInstructions());
-//            if (MessageBean.EVENT_MESSAGE_PUSH.equals(messageBean.getInstructions())) {
-                new NotificationUtil(getApplicationContext(), 1).
-                        sendSingleLineNotification("", "this is title", "content",
-                                R.drawable.ic_launcher, null, false, false, false);
-//            }
+            Log.e(TAG,messageBean.toString());
+            if (MessageBean.EVENT_MESSAGE_PUSH.equals(messageBean.getInstructions())) {
+                new NotificationUtil(getApplicationContext(), notificationId++).
+                        sendSingleLineNotification("", messageBean.getMsgTitle(), messageBean.getContent(),
+                                R.drawable.ic_qr_pay_ewm_02,createBroadcast(),
+                                false, false, false);
+                handleSuccess(messageBean);
+            }
         }catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
 
+    private void handleSuccess(MessageBean messageBean) {
+        // {"instructions":"CLIENT_RESPOND","status","complete","msgId":"213","failReason":"推送失败原因"}
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("instructions","CLIENT_RESPOND");
+        jsonObject.addProperty("status", "complete");
+        jsonObject.addProperty("msgId", messageBean.getMsgId());
+        NettyClient.getInstance().sendMessage2(jsonObject,null);
+    }
 
+    private PendingIntent createBroadcast() {
+        Intent setAlertIntent=new Intent(this,AlertReceiver.class);
+        setAlertIntent.putExtra("try", "i'm just have a try");
+        return PendingIntent.getBroadcast(getApplicationContext(), 1, setAlertIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     @Override
@@ -173,4 +193,10 @@ public class NettyService extends Service implements NettyListener {
                 NettyClient.getInstance().disconnect();*//*
             }
     }*/
+
+
+    public static void startLongConnectionService(Context context) {
+        context.startService(new Intent(context, NettyService.class));
+        context.startService(new Intent(context, LocalService.class));
+    }
 }

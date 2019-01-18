@@ -4,6 +4,7 @@ package com.weleadin.connection.netty;
 import android.util.Log;
 
 import com.google.gson.JsonObject;
+import com.weleadin.connection.service.NettyService;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -11,7 +12,7 @@ import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 
 public class NettyClientHandler extends SimpleChannelInboundHandler<String> {
-    private static final String TAG = NettyClientHandler.class.getSimpleName();
+    private static final String TAG = NettyService.TAG;
     private NettyListener listener;
 
 
@@ -37,7 +38,7 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<String> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
-//        Log.e(TAG, "来自服务器的消息 ====》" + msg);
+        Log.e(TAG, "来自服务器的消息 ====》" + msg);
         listener.onMessageResponse(msg);
     }
 
@@ -56,11 +57,12 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<String> {
             if (event.state() == IdleState.WRITER_IDLE){
                 /*try{
                     //
-                    Log.e(TAG, "发送心跳");
-                    ctx.channel().writeAndFlush("这是心跳信息");
+//                    Log.e(TAG, "发送心跳");
+//                    ctx.channel().writeAndFlush("这是心跳信息");
                 } catch (Exception e){
                     e.printStackTrace();
                 }*/
+                Log.e(TAG, "发送心跳");
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("instructions","HEART_BEAT");
                 ctx.channel().writeAndFlush(jsonObject.toString()+"\t").addListener(new FutureListener() {

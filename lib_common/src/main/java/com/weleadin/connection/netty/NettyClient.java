@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.weleadin.connection.service.NettyService;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -15,7 +16,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 
 public class NettyClient {
 
-    public static final String TAG = NettyClient.class.getSimpleName();
+    public static final String TAG = NettyService.TAG;
 
     private static NettyClient nettyClient = new NettyClient();
 

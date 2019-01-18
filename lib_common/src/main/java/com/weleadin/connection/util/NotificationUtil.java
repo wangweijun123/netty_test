@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
@@ -50,7 +51,7 @@ public class NotificationUtil {
         //小图标
         builder.setSmallIcon(smallIcon);
         //大图标(这边同时设置了小图标跟大图标，在5.0及以上版本通知栏里面的样式会有所不同)
-//        builder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher));
+        builder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), smallIcon));
         //设置该条通知时间
         builder.setWhen(System.currentTimeMillis());
         //设置为true，点击该条通知会自动删除，false时只能通过滑动来删除
@@ -71,6 +72,16 @@ public class NotificationUtil {
         builder.setDefaults(defaults);
         //设置是否为一个正在进行中的通知，这一类型的通知将无法删除
         builder.setOngoing(true);
+    }
+
+    public static void sendNotification(Context context) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+        //通知栏标题
+        builder.setContentTitle("title");
+        //通知栏内容
+        builder.setContentText("content");
+        NotificationManager manager= (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.notify(1, builder.build());
     }
 
     /**

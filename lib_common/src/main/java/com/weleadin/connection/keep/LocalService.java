@@ -41,6 +41,9 @@ public class LocalService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        Log.e(TAG,"local service onCreate() "+this);
+
         myBinder = new MyBinder();
         serviceConnection = new ServiceConnection();
         //使Service变成前台服务

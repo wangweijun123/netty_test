@@ -6,20 +6,6 @@ public class MessageBean implements Serializable {
     // 服务端推送消息
     public static final String EVENT_MESSAGE_PUSH = "EVENT_MESSAGE_PUSH";
 
-    /**
-     * instructions : EVENT_MESSAGE_PUSH
-     * msgId : 123
-     * usrCode : 232
-     * notifyTitle : 通知标题
-     * msgTitle : 消息主题
-     * content : 消息内容
-     * msgType : popups
-     * c_id : 321
-     * issound : 1
-     * sendTime : 2019-01-18 00:00:00
-     * orderid : 20181546554
-     */
-
     private String instructions;
     private String msgId;
     private String usrCode;

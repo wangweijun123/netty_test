@@ -21,15 +21,23 @@ import com.weleadin.connection.netty.NettyListener;
 import com.weleadin.connection.util.NotificationUtil;
 import com.wld.process.IMyAidlInterface;
 
+import java.util.Random;
+
 public class NettyService extends Service implements NettyListener {
 
     public static final String TAG = NettyService.class.getSimpleName();
+
+    public static final String ACTION_MESSAGE = "com.weleadin.action.MESSAGE";
+    public static final String ACTION_CLICK = "com.weleadin.action.CLICK";
+
 
     private static final int NOTIFICATION_ID = 20;
 
     private MyBinder myBinder;
 
     private  ServiceConnection serviceConnection;
+
+    private int notificationId = 1;
 
     class MyBinder extends IMyAidlInterface.Stub {
 
@@ -39,15 +47,11 @@ public class NettyService extends Service implements NettyListener {
         }
     }
 
-
-
-
     @Override
     public void onCreate() {
         super.onCreate();
+
         NettyClient.getInstance().setListener(this);
-    //    EventBus.getDefault().register(this);
-        connect();
 
         myBinder = new MyBinder();
         serviceConnection = new ServiceConnection();
@@ -59,17 +63,18 @@ public class NettyService extends Service implements NettyListener {
         }
     }
 
-
     @Override
     public IBinder onBind(Intent intent) {
         return myBinder;
     }
-
-
+    private String userId;
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         bindService(new Intent(this, LocalService.class), serviceConnection,
                 BIND_AUTO_CREATE);
+
+        userId = intent.getStringExtra("userId");
+        connect();
         return Service.START_STICKY;
     }
 
@@ -87,29 +92,32 @@ public class NettyService extends Service implements NettyListener {
     private void sendMessage(){
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("instructions","BIND_USER");
-        jsonObject.addProperty("usrCode", "u123456789");
+        jsonObject.addProperty("usrCode", userId);
         NettyClient.getInstance().sendMessage2(jsonObject,null);
     }
-
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-       // EventBus.getDefault().unregister(this);
         NettyClient.getInstance().setReconncetNum(0);
         NettyClient.getInstance().disconnect();
     }
 
-    private int notificationId = 1;
     @Override
     public void onMessageResponse(String jsonMSG) {
         try {
             MessageBean messageBean = JSON.parseObject(jsonMSG,MessageBean.class);
             Log.e(TAG,messageBean.toString());
             if (MessageBean.EVENT_MESSAGE_PUSH.equals(messageBean.getInstructions())) {
+                // 通知其他module
+                Intent intent = new Intent(ACTION_MESSAGE);
+                intent.putExtra("message", jsonMSG);
+                intent.putExtra("messageBean", messageBean);
+                sendBroadcast(intent);
+
                 new NotificationUtil(getApplicationContext(), notificationId++).
                         sendSingleLineNotification("", messageBean.getMsgTitle(), messageBean.getContent(),
-                                R.drawable.ic_qr_pay_ewm_02,createBroadcast(),
+                                R.drawable.ic_qr_pay_ewm_02,createBroadcast(messageBean),
                                 false, false, false);
                 handleSuccess(messageBean);
             }
@@ -119,7 +127,6 @@ public class NettyService extends Service implements NettyListener {
     }
 
     private void handleSuccess(MessageBean messageBean) {
-        // {"instructions":"CLIENT_RESPOND","status","complete","msgId":"213","failReason":"推送失败原因"}
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("instructions","CLIENT_RESPOND");
         jsonObject.addProperty("status", "complete");
@@ -127,9 +134,9 @@ public class NettyService extends Service implements NettyListener {
         NettyClient.getInstance().sendMessage2(jsonObject,null);
     }
 
-    private PendingIntent createBroadcast() {
+    private PendingIntent createBroadcast(MessageBean messageBean) {
         Intent setAlertIntent=new Intent(this,AlertReceiver.class);
-        setAlertIntent.putExtra("try", "i'm just have a try");
+        setAlertIntent.putExtra("messageBean", messageBean);
         return PendingIntent.getBroadcast(getApplicationContext(), 1, setAlertIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
     }
@@ -138,7 +145,7 @@ public class NettyService extends Service implements NettyListener {
     public void onServiceStatusConnectChanged(int statusCode) {
         Log.e(TAG,"status:"+statusCode);
         if(statusCode == NettyListener.STATUS_CONNECT_SUCCESS){
-//            Log.e(TAG,"连接成功后发送消息");
+            //连接成功后发送消息
             sendMessage();
         }
     }
@@ -181,22 +188,10 @@ public class NettyService extends Service implements NettyListener {
         return  new Notification();
     }
 
-   /* @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onNetworkChangeEvent(NetworkChangeEvent event) {
-        hasNetWork(event.isConnected);
-    }
-    private void hasNetWork(boolean has) {
-            if (has) {
-                connect();
-            } else {
-               *//* NettyClient.getInstance().setReconncetNum(0);
-                NettyClient.getInstance().disconnect();*//*
-            }
-    }*/
-
-
-    public static void startLongConnectionService(Context context) {
-        context.startService(new Intent(context, NettyService.class));
+    public static void startLongConnectionService(Context context, String userId) {
+        Intent intent = new Intent(context, NettyService.class);
+        intent.putExtra("userId", userId);
+        context.startService(intent);
         context.startService(new Intent(context, LocalService.class));
     }
 }

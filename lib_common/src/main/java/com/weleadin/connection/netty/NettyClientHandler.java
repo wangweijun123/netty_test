@@ -29,7 +29,8 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<String> {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
-        Log.e(TAG,"连接被断开 ChannelHandlerContext:"+ctx);
+        Log.e(TAG,"连接被断开 ChannelHandlerContext:"+ctx+", name:"+Thread.currentThread().getName()
+        +"  id:"+Thread.currentThread().getId());
         NettyClient.getInstance().setConnectStatus(false);
    //     ctx.close();
         listener.onServiceStatusConnectChanged(NettyListener.STATUS_CONNECT_CLOSED);

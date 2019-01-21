@@ -8,7 +8,7 @@ public class Configs {
 
 
 //    public static final String SOCKET_HOST = "39.108.192.195";
-    public static final String SOCKET_HOST = "192.168.1.246";
+    public static final String SOCKET_HOST = "192.168.1.61";
     public static final int SOCKET_PORT = 17002;
 
     public static final String NEW_SIGN_KEY_URL = "wld20181010";

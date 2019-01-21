@@ -30,6 +30,7 @@ public class NettyClient {
 
     private int reconnectNum = Integer.MAX_VALUE;
 
+    // 30 秒重连一次
     private long reconnectIntervalTime = 30 * 1000;
 
     private Bootstrap bootstrap;
@@ -84,9 +85,11 @@ public class NettyClient {
     }
 
     public void reconnect(){
+        Log.e(TAG, "reconnect  reconnectNum:"+reconnectNum+" isConnect:"+isConnect);
         if(reconnectNum > 0 && !isConnect){
             reconnectNum --;
             try {
+                Log.e(TAG, "sleep  ...");
                 Thread.sleep(reconnectIntervalTime);
             } catch (InterruptedException e) {
                 e.printStackTrace();
